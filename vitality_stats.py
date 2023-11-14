@@ -19,12 +19,12 @@ for year in range(2003, 2016):
     if os.path.exists(file_path):
         
         # Read the current file into a DataFrame
-        df = pd.read_csv(file_path, sep=' ')
+        df = pd.read_csv(file_path, sep='\t')
 
         # Filter rows based on the specified conditions
         filtered_df = df[(df['Drug/Alcohol Induced Cause'] == 'Drug poisonings (overdose) Unintentional (X40-X44)') & 
                          (df['Year Code'] == year) & 
-                         (df['County'].isin(state_codes))]
+                         (df['County'].str[-2:].isin(state_codes))]
 
         # Append the filtered data to the result DataFrame
         result_df = result_df._append(filtered_df, ignore_index=True)
