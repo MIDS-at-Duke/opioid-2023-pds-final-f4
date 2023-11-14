@@ -8,8 +8,8 @@ result_df = pd.DataFrame()
 state_codes = ['FL', 'WA', 'TX']
 
 # Set the path to the directory containing the files
-directory_path = r'C:\Users\19l20\Desktop\mids_study\vitality_stats_data'
-
+directory_path = r'00_source_data\vitality_stats_data'
+final_path = r'20_intermediate_files'
 # Loop through each year
 for year in range(2003, 2016):
     # Generate the file name for the current year
@@ -30,4 +30,4 @@ for year in range(2003, 2016):
         result_df = result_df._append(filtered_df, ignore_index=True)
 
 # Save the result DataFrame to a new CSV file
-result_df.to_csv(os.path.join(directory_path, 'filtered_data.csv'), index=False)
+result_df.to_csv(os.path.join(final_path, 'filtered_data.csv'), index=False)
