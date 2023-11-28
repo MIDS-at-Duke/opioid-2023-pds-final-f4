@@ -41,3 +41,5 @@ __pycache__/
 *.py[cod]
 *$py.class
 10_code/__pycache__
+
+*.ipynb

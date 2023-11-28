@@ -12,11 +12,6 @@ for i in range(len(datasets)):
         vd.categorize_causes
     )
 
-# datasets[0][
-#     ["Drug/Alcohol Induced Cause", "Cause_of_Death"]
-# ]  # Show the original and new categorized columns for comparison
-
-
 # Extract the state prefix, strip the comma and space, and concatenate with 'County Code'
 for i in range(len(datasets)):
     datasets[i]["County_Code"] = (
@@ -30,8 +25,8 @@ for i in range(len(datasets)):
     # cast Year to int
     datasets[i]["Year"] = datasets[i]["Year"].astype(int)
 
-
-# datasets[0].head(5)
+    datasets[i].replace("Missing", 0, inplace=True)
+    datasets[i]["Deaths"] = datasets[i]["Deaths"].astype(int)
 
 # Let’s drop the columns we don’t need to make them easier to work with.
 for i in range(len(datasets)):
