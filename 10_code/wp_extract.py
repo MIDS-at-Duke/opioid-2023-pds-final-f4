@@ -13,11 +13,11 @@ dtypes = {"NDC_NO": "object", "REPORTER_ADDL_CO_INFO": "object"}
 ddf = dd.read_csv(
     tsv_path, sep="\t", blocksize="500MB", dtype=dtypes
 )  # adjust blocksize as needed
-
+print(ddf.head())
 # Select the desired columns
 ddf_subset = ddf[
-    ["BUYER_STATE", "BUYER_COUNTY", "CALC_BASE_WT_IN_GM", "TRANSACTION_DATE"]
+    ["BUYER_STATE", "BUYER_COUNTY", "MME", "TRANSACTION_DATE"]
 ]
 
 # Write the subset to a Parquet file
-ddf_subset.to_parquet("..\\20_intermediate_files\\wp_trimmed.parquet")
+ddf_subset.to_parquet("..\\20_intermediate_files\\wp_trimmed_MME.parquet")

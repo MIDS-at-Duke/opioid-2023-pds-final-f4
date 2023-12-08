@@ -4,7 +4,7 @@ import dask.dataframe as dd
 # write those columns to a parquet file.
 
 # Path to the directory of Parquet files
-parquet_dir = "..\\20_intermediate_files\\wp_trimmed.parquet"
+parquet_dir = "..\\20_intermediate_files\\wp_trimmed_MME.parquet"
 
 # Read the Parquet files as a single Dask DataFrame
 ddf = dd.read_parquet(parquet_dir)
@@ -22,8 +22,8 @@ print(ddf.head())
 
 # Group by the specified columns and compute the average of CALC_BASE_WT_IN_GM
 ddf_grouped = ddf.groupby(["BUYER_STATE", "BUYER_COUNTY", "TRANSACTION_DATE"])[
-    "CALC_BASE_WT_IN_GM"
-].sum()
+    "MME"
+].mean()
 
 # Reset the index to make the result a DataFrame
 ddf_grouped = ddf_grouped.reset_index()
@@ -35,4 +35,4 @@ result_df = ddf_grouped.compute()
 print(result_df.head())
 
 
-result_df.to_parquet("..\\20_intermediate_files\\wp_avg_trimmed.parquet")
+result_df.to_parquet("..\\20_intermediate_files\\wp_avg_trimmed_MME.parquet")

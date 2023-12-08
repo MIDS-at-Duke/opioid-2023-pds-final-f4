@@ -3,14 +3,14 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-data = pd.read_parquet("..\\20_intermediate_files\\wp_avg_trimmed.parquet")
+data = pd.read_parquet("../20_intermediate_files/wp_avg_trimmed_MME.parquet")
 
 
 data.head()
 
 
 def DiffinDiff(treatment_state, control_list, start_year, end_year, policy_year, data):
-    """Based on dataframe with column headers BUYER_STATE, BUYER_COUNTY, TRANSACTION_DATE, and CALC_BASE_WT_IN_GM"""
+    """Based on dataframe with column headers BUYER_STATE, BUYER_COUNTY, TRANSACTION_DATE, and MME"""
     treatment_data = data[
         (data["BUYER_STATE"] == treatment_state)
         & (data["TRANSACTION_DATE"] > start_year)
@@ -32,7 +32,7 @@ def DiffinDiff(treatment_state, control_list, start_year, end_year, policy_year,
 
     sns.regplot(
         x="TRANSACTION_DATE",
-        y="CALC_BASE_WT_IN_GM",
+        y="MME",
         data=control_pre,
         ax=ax,
         scatter=False,
@@ -40,7 +40,7 @@ def DiffinDiff(treatment_state, control_list, start_year, end_year, policy_year,
     )
     sns.regplot(
         x="TRANSACTION_DATE",
-        y="CALC_BASE_WT_IN_GM",
+        y="MME",
         data=control_post,
         ax=ax,
         scatter=False,
@@ -51,7 +51,7 @@ def DiffinDiff(treatment_state, control_list, start_year, end_year, policy_year,
     # Plot the first regplot on the axes
     sns.regplot(
         x="TRANSACTION_DATE",
-        y="CALC_BASE_WT_IN_GM",
+        y="MME",
         data=treatment_pre,
         ax=ax,
         scatter=False,
@@ -61,7 +61,7 @@ def DiffinDiff(treatment_state, control_list, start_year, end_year, policy_year,
     # Plot the second regplot on the same axes
     sns.regplot(
         x="TRANSACTION_DATE",
-        y="CALC_BASE_WT_IN_GM",
+        y="MME",
         data=treatment_post,
         ax=ax,
         scatter=False,
@@ -73,13 +73,67 @@ def DiffinDiff(treatment_state, control_list, start_year, end_year, policy_year,
 
     plt.title(f"Opioid Shipments in {treatment_state} vs. {', '.join(control_list)}")
     plt.xlabel("Year")
-    plt.ylabel("Opioid Shipments (in grams)")
+    plt.ylabel("Opioid Shipments (MME*)")
     plt.legend()
-    plt.savefig(f"..\\30_results\\{treatment_state}_vs_{control_list}_pre_post.png")
+    #make more space at the bottom margin
+    plt.subplots_adjust(bottom=0.2)
+    #add caption
+    caption = "*Opioid Shipments are measured using the milligram morphine equivilant (MME) metric and averaged accross each county per year."
+    plt.figtext(0.5, 0.05, caption, wrap=True, horizontalalignment='center', multialignment='left', fontsize=10)
+    plt.savefig(f"..\\30_results\\{treatment_state}_vs_{control_list}_DID_MME.png")
     plt.show()
 
+def PrePost(treatment_state, start_year, end_year, policy_year, data):
+    """Based on dataframe with column headers BUYER_STATE, BUYER_COUNTY, TRANSACTION_DATE, and MME"""
+    treatment_data = data[
+        (data["BUYER_STATE"] == treatment_state)
+        & (data["TRANSACTION_DATE"] > start_year)
+        & (data["TRANSACTION_DATE"] < end_year)
+    ]
+    treatment_pre = treatment_data[treatment_data["TRANSACTION_DATE"] < policy_year]
+    treatment_post = treatment_data[treatment_data["TRANSACTION_DATE"] >= policy_year]
+    
+
+    # plot lmplots of fl_pre_2010 and fl_post_2010 on the same plot with x= TRANSACTION_DATE and y = CALC_BASE_WT_IN_GM
+    # Create a figure and axes
+    fig, ax = plt.subplots()
+    # Plot the first regplot on the axes
+    sns.regplot(
+        x="TRANSACTION_DATE",
+        y="MME",
+        data=treatment_pre,
+        ax=ax,
+        scatter=False,
+        color="blue",
+    )
+
+    # Plot the second regplot on the same axes
+    sns.regplot(
+        x="TRANSACTION_DATE",
+        y="MME",
+        data=treatment_post,
+        ax=ax,
+        scatter=False,
+        color="blue",
+        label="Treatment State",
+    )
+    ax.axvline(x=policy_year, color="r", linestyle="--")
+    # Show the plot
+
+    plt.title(f"Opioid Shipments in {treatment_state}")
+    plt.xlabel("Year")
+    plt.ylabel("Opioid Shipments (MME*)")
+    plt.legend()
+    #make more space at the bottom margin
+    plt.subplots_adjust(bottom=0.2)
+    #add caption
+    caption = "*Opioid Shipments are measured using the milligram morphine equivilant (MME) metric and averaged accross each county per year."
+    plt.figtext(0.5, 0.05, caption, wrap=True, horizontalalignment='center', multialignment='left', fontsize=10)
+    plt.savefig(f"..\\30_results\\{treatment_state}_PP_MME.png")
+    plt.show()
 
 DiffinDiff("FL", ["TN", "NC", "IN", "TX", "CA"], 2006, 2014, 2010, data)
-
+PrePost("FL", 2006, 2014, 2010, data)
 
 DiffinDiff("WA", ["AZ", "CA", "ID", "IA", "NE", "OR"], 2008, 2016, 2012, data)
+PrePost("WA", 2008, 2016, 2012, data)
